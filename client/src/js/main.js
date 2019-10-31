@@ -16,4 +16,6 @@ engine.start().then(() => {
 
     sm.create('main');
     sm.set('main');
+
+    console.log('Scene set');
 });

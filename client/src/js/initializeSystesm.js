@@ -1,6 +1,4 @@
-import GUIElementSystem from "@woosh/meep/src/model/engine/ecs/systems/GUIElementSystem.js";
 import ScriptSystem from "@woosh/meep/src/model/engine/ecs/systems/ScriptSystem.js";
-import TeamSystem from "@woosh/meep/src/model/engine/ecs/team/TeamSystem.js";
 import PathFollowingSystem from "@woosh/meep/src/model/navigation/ecs/systems/PathFollowingSystem.js";
 import PathSystem from "@woosh/meep/src/model/navigation/ecs/systems/PathSystem.js";
 import SteeringSystem from "@woosh/meep/src/model/engine/ecs/systems/SteeringSystem.js";
@@ -12,7 +10,6 @@ import SoundControllerSystem from "@woosh/meep/src/model/sound/ecs/SoundControll
 import SoundListenerSystem from "@woosh/meep/src/model/sound/ecs/SoundListenerSystem.js";
 import MortalitySystem from "@woosh/meep/src/model/engine/ecs/systems/MortalitySystem.js";
 import TimerSystem from "@woosh/meep/src/model/engine/ecs/systems/TimerSystem.js";
-import HeadsUpDisplaySystem from "@woosh/meep/src/model/engine/ecs/systems/HeadsUpDisplaySystem.js";
 import AnimationSystem from "@woosh/meep/src/model/engine/ecs/systems/AnimationSystem.js";
 import TopDownCameraControllerSystem
     from "@woosh/meep/src/model/engine/input/ecs/systems/TopDownCameraControllerSystem.js";
@@ -26,7 +23,6 @@ import WaterSystem from "@woosh/meep/src/model/graphics/ecs/water/WaterSystem.js
 import TrailSystem from "@woosh/meep/src/model/graphics/ecs/trail/TrailSystem.js";
 import Trail2DSystem from "@woosh/meep/src/model/graphics/ecs/trail2d/Trail2DSystem.js";
 import { Foliage2System } from "@woosh/meep/src/model/level/foliage/ecs/Foliage2System.js";
-import ViewportPositionSystem from "@woosh/meep/src/model/engine/ecs/systems/ViewportPositionSystem.js";
 import { GridPosition2TransformSystem } from "@woosh/meep/src/model/engine/grid/systems/GridPosition2TransformSystem.js";
 import SynchronizePositionSystem from "@woosh/meep/src/model/engine/ecs/systems/SynchronizePositionSystem.js";
 import GridObstacleSystem from "@woosh/meep/src/model/engine/grid/systems/GridObstacleSystem.js";
@@ -43,6 +39,11 @@ import { BehaviorSystem } from "@woosh/meep/src/model/engine/intelligence/behavi
 import { SerializationMetadataSystem } from "@woosh/meep/src/model/engine/ecs/systems/SerializationMetadataSystem.js";
 import { AttachmentSocketsSystem } from "@woosh/meep/src/model/engine/ecs/sockets/AttachmentSocketsSystem.js";
 import { AttachmentSystem } from "@woosh/meep/src/model/engine/ecs/attachment/AttachmentSystem.js";
+import { NameSystem } from "@woosh/meep/src/extra/ecs/name/NameSystem.js";
+import { TeamSystem } from "@woosh/meep/src/extra/ecs/team/TeamSystem.js";
+import GUIElementSystem from "@woosh/meep/src/model/engine/ecs/gui/GUIElementSystem.js";
+import HeadsUpDisplaySystem from "@woosh/meep/src/model/engine/ecs/gui/HeadsUpDisplaySystem.js";
+import ViewportPositionSystem from "@woosh/meep/src/model/engine/ecs/gui/ViewportPositionSystem.js";
 
 /**
  *
@@ -59,7 +60,7 @@ function initializeSystems(
     const grid = engine.grid;
     const devices = engine.devices;
 
-    const guiSystem = new GUIElementSystem(engine.gui.view);
+    const guiSystem = new GUIElementSystem(engine.gui.view, engine);
     const headsUpDisplaySystem = new HeadsUpDisplaySystem(graphics);
 
     entityManager
@@ -109,6 +110,7 @@ function initializeSystems(
         .addSystem(new SerializationMetadataSystem())
         .addSystem(new AttachmentSocketsSystem())
         .addSystem(new AttachmentSystem())
+        .addSystem(new NameSystem())
     ;
 }
 
