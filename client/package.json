@@ -1,0 +1,19 @@
+{
+  "name": "twinstick-client",
+  "version": "1.0.0",
+  "description": "Twin-Stick shooter client",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config jest.config.json"
+  },
+  "keywords": [
+    "twinstick",
+    "game",
+    "shooter"
+  ],
+  "author": "Alex Goldring, Alexey Serikov",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@woosh/meep": "^1.0.0"
+  }
+}
