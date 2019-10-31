@@ -4,7 +4,8 @@
   "description": "Twin-Stick shooter client",
   "main": "index.js",
   "scripts": {
-    "test": "jest --config jest.config.json"
+    "test": "jest --config jest.config.json",
+    "start:dev": "webpack-dev-server"
   },
   "keywords": [
     "twinstick",
@@ -14,6 +15,13 @@
   "author": "Alex Goldring, Alexey Serikov",
   "license": "UNLICENSED",
   "dependencies": {
-    "@woosh/meep": "^1.0.0"
+    "@woosh/meep": "^1.0.0",
+    "string-replace-webpack-plugin": "^0.1.3",
+    "terser-webpack-plugin": "^2.2.1",
+    "webpack": "^4.41.2",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.10"
   }
 }
