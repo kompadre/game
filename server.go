@@ -1,10 +1,18 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"net"
 	"os"
-)
+	"os/signal"
+	"syscall"
 
+	"google.golang.org/grpc"
+
+	"./proto"
+	"./service"
+)
 
 func main() {
 	port := flag.Int("port", 8080, "The port on which gRPC server will listen")
@@ -17,11 +25,11 @@ func main() {
 	fmt.Printf("Listening on %v\n", lis.Addr())
 	svr := grpc.NewServer()
 	// register our service implementation
-	proto.RegisterStarfriendsServer(svr,
-		&service.StarfriendsImpl{})
+	//proto.RegisterStarfriendsServer(svr,
+	//	&service.StarfriendsImpl{})
+	proto.RegisterSessionServer(svr, &service.SessionImpl{})
 	// trap SIGINT / SIGTERM to exit cleanly
-	c := make(chan os.Signal, 1)    go install github.com/golang/protobuf/protoc-gen-go
-
+	c := make(chan os.Signal, 1)
 
 	signal.Notify(c, syscall.SIGINT)
 	signal.Notify(c, syscall.SIGTERM)
