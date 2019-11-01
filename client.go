@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"time"
+	"strings"
 
 	"./proto"
 	"google.golang.org/grpc"
@@ -29,17 +31,90 @@ func main() {
 		log.Fatalf("fail to dial: %v", err)
 		fail(err)
 	}
-	defer conn.Close()
+	//defer conn.Close()
 
 	client := proto.NewSessionClient(conn)
-	req := proto.SessionRequest{Username: "kompadre", Password: "Unlikely"}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	grant, err := client.NewSession(ctx, &req)
+	ctx := context.Background()
+	stream, err := client.NewSession(ctx)
 	if err != nil {
 		fail(err)
 	}
-	fmt.Printf("%s", grant.GetUuid())
+	//req := proto.SessionRequest{Username: "kompadre", Password: "Unlikely"}
+
+	/*
+		if err := stream.Send(&req); err != nil {
+			log.Fatalf("cannot send %v", err)
+		}
+		resp, err := stream.Recv()
+		fmt.Printf("New session received: %v", resp)
+		if err := stream.Send(&req); err != nil {
+			log.Fatalf("cannot send %v", err)
+		}
+		resp, err = stream.Recv()
+		fmt.Printf("New session received: %v", resp)
+	*/
+
+	done := make(chan bool)
+	//	send := make(chan bool)
+	uuid := ""
+	go func() {
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			fmt.Print("-> ")
+			var newreq *proto.SessionRequest = nil
+			if uuid == "" {
+				text, _ := reader.ReadString('\n')
+				text = strings.Replace(text, "\n", "", -1)
+				password := text
+				fmt.Printf("Password is %v.\n", password)
+				newreq = &proto.SessionRequest{Username: "kompadre", Password: password}
+				if err := stream.Send(newreq); err != nil {
+					log.Fatalf("cannot send %v\n", err)
+				}
+			} else {
+				newreq := &proto.LookAroundRequest{}
+				if err := stream.Send(newreq); err != nil {
+					log.Fatalf("cannot send %v\n", err)
+				}
+			}
+
+		}
+		if err := stream.CloseSend(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	go func() {
+		for {
+			resp, err := stream.Recv()
+			if err == io.EOF {
+				close(done)
+				return
+			}
+			if err != nil {
+				log.Fatalf("cannot receive %v\n", err)
+			}
+			uuid := resp.Uuid
+			if uuid == "" {
+				log.Fatalf("No UUID, Error: %v", resp.Reason)
+			}
+			fmt.Printf("New UUID received: %v\n", uuid)
+		}
+		if err := stream.CloseSend(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	go func() {
+		<-ctx.Done()
+		if err := ctx.Err(); err != nil {
+			log.Println(err)
+		}
+		close(done)
+	}()
+
+	<-done
+	log.Println("finished")
 }
 
 func fail(err error) {
