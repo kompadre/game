@@ -22,3 +22,4 @@ func LookAround(context.Context, *proto.LookAroundRequest) (*proto.LookAroundAns
 	answer := proto.LookAroundAnswer{}
 	return &answer, nil
 }
+

@@ -10,8 +10,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"./proto"
-	"./service"
+	"../proto"
+	"../service"
 )
 
 func main() {
