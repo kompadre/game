@@ -36,7 +36,7 @@ func main() {
 	go func() {
 		<-c
 		fmt.Println("Shutting down...")
-		svr.GracefulStop()
+		svr.Stop()
 	}()
 	// finally, run the server
 	if err := svr.Serve(lis); err != nil {

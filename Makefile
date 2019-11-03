@@ -14,10 +14,10 @@ endif
 
 all: $(DIST)/server$(EXTENSION) $(DIST)/client$(EXTENSION)
 
-$(DIST)/server$(EXTENSION):
+$(DIST)/server$(EXTENSION): cmd/server.go service/service.go proto/game.pb.go
 	go build $(GOFLAGS) -o $@ cmd/server.go 
 
-$(DIST)/client$(EXTENSION):
+$(DIST)/client$(EXTENSION): cmd/client.go service/service.go proto/game.pb.go
 	go build $(GOFLAGS) -o $@ cmd/client.go 
 
 clean:

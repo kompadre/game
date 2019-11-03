@@ -29,7 +29,7 @@ func main() {
 		log.Fatalf("fail to dial: %v", err)
 		fail(err)
 	}
-	//defer conn.Close()
+	defer conn.Close()
 	ctx := context.Background()
 	client := proto.NewSessionClient(conn)
 	req := proto.SessionRequest{Username: "kompadre", Password: "Unlikely"}
@@ -39,9 +39,13 @@ func main() {
 		return
 	}
 	uuid := resp.Uuid
-	fmt.Printf("Uuid received: %v", uuid)
+	fmt.Printf("Uuid received: %v\n", uuid)
 	done := make(chan bool)
 	stream, err := client.LookAround(ctx)
+
+	firstreq := proto.LookAroundRequest{Myuuid: uuid, Type: proto.Types_SYSTEM}
+	err = stream.Send(&firstreq)
+	fmt.Printf("First req sent: %v", firstreq)
 
 	go func() {
 		ctx := stream.Context()
@@ -53,8 +57,6 @@ func main() {
 			}
 
 			resp, err := stream.Recv()
-			fmt.Print("\033[H\033[2J")
-			fmt.Printf("Received look around: \n")
 			if err == io.EOF {
 				fmt.Println("Closing connection")
 				close(done)
@@ -63,8 +65,17 @@ func main() {
 			if err != nil {
 				log.Fatalf("cannot receive %v\n", err)
 			}
-			for key := range resp.Results {
-				fmt.Printf("\t%v\n", resp.Results[key].Uuid)
+
+			if resp.Type == proto.Types_CHAT {
+				fmt.Printf("Received a chat: \n")
+				fmt.Printf("\t%v\n", resp)
+			} else {
+				/*
+					fmt.Printf("Received look around: \n")
+					for key := range resp.Results {
+						fmt.Printf("\t%v\n", resp.Results[key].Uuid)
+					}
+				*/
 			}
 		}
 		if err := stream.CloseSend(); err != nil {
